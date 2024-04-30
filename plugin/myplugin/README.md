@@ -1,0 +1,1 @@
+# Boilerplate Plugin source code for Brkraw nifti app

@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+title: "sordino"
+version: ""
+abstract: ""
+message: ""
+repository-code: "https://github.com/BrkRaw/brkraw-plugin/plugin/sordino"
+
+identifiers:
+  - description: ""
+    type: doi
+    value: "/"
+
+contact:
+  - email: shlee@unc.edu
+    family-names: SungHo 
+    given-names: Lee
+
+authors:
+  - email: shlee@unc.edu
+    family-names: SungHo 
+    given-names: Lee
+
+  - email: shihy@neurology.unc.edu
+    family-names: Yen-Yu
+    given-names: Ian Shih
+
+license: MIT
+
+keywords:
+  - bruker
+  - converter
+  - ratial reconstruction
