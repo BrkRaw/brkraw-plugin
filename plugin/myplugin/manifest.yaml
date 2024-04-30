@@ -1,0 +1,28 @@
+name: myplugin
+
+version: 0.0.1
+
+authors:
+- Sung-Ho Lee (shlee@unc.edu)
+
+license: YourLicense
+description: "My plugin."
+documentation: "README.md"
+citation: CITATION.cff
+
+app:
+  target: tonifti
+  src: myplugin.py::MyPlugIn
+
+dependencies:
+- numpy>=1.18
+
+script:
+  name: myplugin
+  help: plugin function for SORDINO-MRI reconstruction
+  arguments:
+    - name: "--option"
+      help: "Option for command line integration."
+      action: "store_true"
+      default: false
+

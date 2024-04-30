@@ -101,8 +101,7 @@ class Sordino(BasePlugin):
         self.tmpdir.mkdir(exist_ok=True)
     
     def _inspect(self) -> None:
-        """
-        Inspect the provided pvobj to ensure it is compatible with this plugin.
+        """Inspect the provided pvobj to ensure it is compatible with this plugin.
 
         Args:
             pvobj (object): The object to be validated for compatibility.
@@ -123,7 +122,8 @@ class Sordino(BasePlugin):
             error_message = f"Input pvobj is missing required fields: {', '.join(missing_fields)}"
             raise NotImplementedError(error_message)
         if not hasattr(self.info, 'orientation'):
-            warnings.warn("Input object is missing the 'orientation' attribute. This is not critical, but the orientation of the reconstructed image might be incorrect.", UserWarning)
+            warnings.warn("Input object is missing the 'orientation' attribute. \
+                This is not critical, but the orientation of the reconstructed image might be incorrect.", UserWarning)
 
     def _get_fid(self) -> Union[BufferedReader, ZipExtFile]:
         return self.pvobj.get_fid()
@@ -201,8 +201,11 @@ class Sordino(BasePlugin):
     
     def _dataobj_correct_orientation(self, dataobj) -> None:
         """Correct the subject orientation to match that of the online reconstructed image.
-        Note: This is experimental and has only been tested on a small number of cases.
-        Subject to updates and revisions."""
+        
+        Note: 
+            This is experimental and has only been tested on a small number of cases.
+            Subject to updates and revisions.
+        """
         # logical to physical orientation correction
         grad_mat = self.pvobj.acqp['ACQ_GradientMatrix'][0]
         corrected_dataobj = self._rotate_dataobj(dataobj, grad_mat)
