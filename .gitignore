@@ -1,0 +1,17 @@
+*.pyc
+__pycache__
+__pycache__/*
+.idea
+.idea/*
+deploy/local.properties
+ui/styles/*.css
+dist
+build
+*.pid
+*.egg-info
+*.egg-info/*
+.DS_Store
+tests/tutorials
+_test*.py
+_*.ipynb
+_*.log
