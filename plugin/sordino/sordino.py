@@ -9,14 +9,14 @@ from pathlib import Path
 from tqdm import tqdm
 from scipy.interpolate import interp1d
 from brkraw.app.tonifti import BasePlugin
-from brkraw.app.tonifti.base import ScaleMode
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from nibabel.nifti1 import Nifti1Header
-    from typing import List, Union, Optional, Tuple
-    from brkraw.app.tonifti import PvScan, PvFiles
     from io import BufferedReader, BufferedWriter
     from zipfile import ZipExtFile
+    from typing import List, Union, Optional, Tuple, Literal
+    from nibabel.nifti1 import Nifti1Header
+    from brkraw.app.tonifti import PvScan, PvFiles
+    
 
 class Sordino(BasePlugin):
     """ SORDINO: Plugin to Convert Bruker's SORDINO Images to NifTi File for ToNifti App in Brkraw
@@ -25,14 +25,14 @@ class Sordino(BasePlugin):
     _recon_dtype: Optional[np.dtype] = None
     
     def __init__(self, pvobj: Union['PvScan', 'PvFiles'],
-                 ext_factors: List[float, float, float]=None, 
-                 offset: Optional[int]=None, 
-                 num_frames: Optional[int]=None,
-                 spoketiming: Optional[bool]=False,
-                 mem_limit: Optional[float]=None,
-                 tmpdir: Optional[Path]=None,
-                 nufft: Optional[str]='sigpy',
-                 scale_mode: Optional[ScaleMode]=None,
+                 ext_factors: List[float, float, float] = None, 
+                 offset: Optional[int] = None, 
+                 num_frames: Optional[int] = None,
+                 spoketiming: Optional[bool] = False,
+                 mem_limit: Optional[float] = None,
+                 tmpdir: Optional[Path] = None,
+                 nufft: Optional[Literal['sigpy']] = 'sigpy',
+                 scale_mode: Optional[Literal['header', 'apply']] = 'header',
                  **kwargs
                  ) -> None:
         super().__init__(pvobj, **kwargs)
@@ -45,7 +45,7 @@ class Sordino(BasePlugin):
         self.mem_limit: Optional[float] = mem_limit
         self.num_frames: Optional[int] = num_frames or self._num_frames
         self.nufft: str = nufft
-        self.scale_mode: ScaleMode = scale_mode or ScaleMode.HEADER
+        self.scale_mode: scale_mode
         self.slope, self.inter = 1, 0
         
     def get_dataobj(self) -> np.ndarray:
@@ -57,7 +57,7 @@ class Sordino(BasePlugin):
             dataobj = self._recon_fid()
         dataobj = np.abs(dataobj) # magnitude image only
         dataobj = self._dataobj_correct_orientation(dataobj)
-        if self.scale_mode == ScaleMode.HEADER:
+        if not self.scale_mode or self.scale_mode == 'header':
             self._calc_slope_inter(dataobj)
             dataobj = self._dataobj_rescale_to_uint16(dataobj)
         return dataobj
@@ -73,11 +73,11 @@ class Sordino(BasePlugin):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             header = super().get_nifti1header(self)
-            if self.scale_mode == ScaleMode.HEADER:
+            if self.scale_mode == 'header':
                 header.set_slope_inter(*self._calc_slope_inter())
             return header
     
-    def _calc_slope_inter(self, dataobj: np.ndarray):
+    def _calc_slope_inter(self, dataobj: np.ndarray) -> None:
         dmax = np.max(dataobj)
         self.inter = np.min(dataobj)
         self.slope = (dmax - self.inter) / 2**16
