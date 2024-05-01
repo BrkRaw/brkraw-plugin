@@ -53,14 +53,21 @@ class MyPlugIn(BasePlugin):
     """
     
     def __init__(self, pvobj: Union['PvScan', 'PvReco', 'PvFiles'],
+                 # --- start of custom arguments ---
+                 option: Optional[bool],
+                 # ---  end of custom arguments  ---
                  **kwargs
                  ) -> None:
         """Initialize the plugin with a PvObj class instance.
         
         Args:
             pvobj (PvScan | PvReco | PvFiles): Primitive class for PvObj (PvStudy is not supported).
+            option (bool): If true, multiply dataobj by 2
         """
         super().__init__(pvobj, **kwargs)
+        # --- start of mapping custom argumentss ---
+        self.option = option
+        # ---  end of mapping custom arguments  ---
         self._inspect()
         self._set_params()
         
@@ -97,6 +104,8 @@ class MyPlugIn(BasePlugin):
         """
         dataobj = super().get_dataobj(scanobj=self, 
                                       reco_id=reco_id)
+        if self.option:
+            dataobj *= 2
         return dataobj
     
     def get_affine(self, reco_id:Optional[int]=None, 
