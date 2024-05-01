@@ -1,0 +1,16 @@
+name: bids
+type: preset
+authors:
+- Sung-Ho Lee (shlee@unc.edu)
+description: "The presets for 'bids' plugin"
+
+app:
+  target: tonifti
+  plugin: bids
+
+versions:
+  dti:
+    dti: true
+  msme:
+    msme: true
+  

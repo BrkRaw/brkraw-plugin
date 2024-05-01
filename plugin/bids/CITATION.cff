@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+title: "bids"
+version: ""
+abstract: ""
+message: ""
+repository-code: "https://github.com/BrkRaw/brkraw-plugin/plugin/bids"
+
+identifiers:
+  - description: ""
+    type: doi
+    value: "/"
+
+contact:
+  - email: shlee@unc.edu
+    family-names: SungHo 
+    given-names: Lee
+
+authors:
+  - email: shlee@unc.edu
+    family-names: SungHo 
+    given-names: Lee
+
+license: 
+
+keywords:
+  - Bruker
+  - BIDS
+  - converter
+  - plugin
