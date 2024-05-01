@@ -1,4 +1,5 @@
 name: sordino
+type: plugin
 
 version: 24.4.27
 
@@ -27,7 +28,7 @@ script:
   help: plugin function for SORDINO-MRI reconstruction
   arguments:
     - name: "-e"
-      long_name: "--extention"
+      long_name: "--extension"
       help: "Extension factors for FOV regridding (LR AP SI)"
       nargs: "3"
       type: float

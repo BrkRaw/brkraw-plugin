@@ -1,0 +1,126 @@
+startup:
+  - 'import numpy as np'
+
+dataset:
+  Name: ''
+  BIDSVersion: 1.2.2
+  License: ''
+  Authors:
+  - ''
+  Acknowledgements: ''
+  HowToAsknowledge: ''
+  Funding:
+  - ''
+  EthicApprovals: ''
+  ReferenceAndLinks: ''
+  DatasetDOI: ''
+  
+common:
+  Manufacturer: visu_pars.VisuManufacturer
+  ManufacturersModelName: visu_pars.VisuStation
+  DeviceSerialNumber: visu_pars.VisuSystemOrderNumber
+  StationName: visu_pars.VisuStation
+  SoftwareVersion: visu_pars.VisuAcqSoftwareVersion
+  MagneticFieldStrength:
+    Freq: visu_pars.VisuAcqImagingFrequency
+    script: Freq / 42.576
+  ReceiveCoilName: visu_pars.VisuCoilReceiveName
+  ReceiveCoilActiveElements: visu_pars.VisuCoilReceiveType
+  GradientSetType: acqp.ACQ_status
+  MRTransmitCoilSequence:
+    Name: visu_pars.VisuCoilTransmitName
+    Manufacture: visu_pars.VisuCoilTransmitManufacturer
+    Type: visu_pars.VisuCoilTransmitType
+  CoilConfigName: acqp.ACQ_coil_config_file
+  MatrixCoilMode: acqp.ACQ_experiment_mode
+  CoilCombinationMethod: null
+  PulseSequenceType: acqp.PULPROG
+  ScanningSequence: visu_pars.VisuAcqSequenceName
+  SequenceVariant: visu_pars.VisuAcqEchoSequenceType
+  ScanOptions:
+    RG: visu_pars.VisuRespSynchUsed
+    CG: visu_pars.VisuCardiacSynchUsed
+    PFF:
+      key: visu_pars.VisuAcqPartialFourier
+      idx: 0
+    PFP:
+      key: visu_pars.VisuAcqPartialFourier
+      idx: 1
+    FC: visu_pars.VisuAcqFlowCompensation
+    SP: method.PVM_FovSatOnOff
+    FP: visu_pars.VisuAcqSpectralSuppression
+  SequenceName:
+  - visu_pars.VisuAcquisitionProtocol
+  - acqp.ACQ_protocol_name
+  PulseSequenceDetails: acqp.ACQ_scan_name
+  NonlinearGradientCorrection: visu_pars.VisuAcqKSpaceTraversal
+  NumberShots: visu_pars.VisuAcqKSpaceTrajectoryCnt
+  ParallelReductionFactorInPlane: acqp.ACQ_phase_factor
+  ParallelAcquisitionTechnique: null
+  PartialFourier: visu_pars.VisuAcqPartialFourier
+  PartialFourierDirection: null
+  PhaseEncodingDirection:
+  - key: visu_pars.VisuAcqGradEncoding
+    where: phase_enc
+  - visu_pars.VisuAcqImagePhaseEncDir
+  EffectiveEchoSpacing:
+    BWhzPixel: visu_pars.VisuAcqPixelBandwidth
+    MatSizePE:
+      key: method.PVM_EncMatrix
+      idx:
+      - key: visu_pars.VisuAcqGradEncoding
+        where: phase_enc
+      - 1
+    ACCfactor: acqp.ACQ_phase_factor
+    script: (1 / (MatSizePE * BWhzPixel)) / ACCfactor
+  TotalReadoutTime:
+    ETL: visu_pars.VisuAcqEchoTrainLength
+    BWhzPixel: visu_pars.VisuAcqPixelBandwidth
+    ACCfactor: acqp.ACQ_phase_factor
+    script: (1 / BWhzPixel) / ACCfactor
+  EchoTime:
+    TE: visu_pars.VisuAcqEchoTime
+    Equation: np.array(TE)/1000
+  InversionTime: visu_pars.VisuAcqInversionTime
+  SliceTiming:
+    TR: visu_pars.VisuAcqRepetitionTime
+    Order: acqp.ACQ_obj_order
+    script: np.linspace(0, TR/1000, len(Order) + 1)[Order]
+  SliceEncodingDirection:
+  - key: visu_pars.VisuAcqGradEncoding
+    where: slice_enc
+  - EncSeq: visu_pars.VisuAcqGradEncoding
+    script: len(EncSeq)
+  DwellTime:
+    BWhzPixel: visu_pars.VisuAcqPixelBandwidth
+    script: 1/BWhzPixel
+  FlipAngle: visu_pars.VisuAcqFlipAngle
+  MultibandAccerlationFactor: null
+  AnatomicalLandmarkCoordinates: null
+  InstitutionName: visu_pars.VisuInstitution
+  InstitutionAddress: null
+  InstitutionalDepartmentName: null
+
+fmri:
+  RepetitionTime:
+    TR: visu_pars.VisuAcqRepetitionTime
+    script: TR/1000
+  VolumeTiming:
+    TR: visu_pars.VisuAcqRepetitionTime
+    NR: method.PVM_NRepetitions
+    script: (np.arange(NR)*(TR/1000)).tolist()
+  TaskName: null
+  NumberOfVolumesDiscardedByScanner: method.PVM_DummyScans
+  NumberOfVolumesDiscardedByUser: null
+  DelayTime: null
+  AcquisitionDuration:
+    TR: method.PVM_ScanTime
+    script: TR/1000
+  DelayAfterTrigger: null
+  Instructions: null
+  TaskDescription: null
+  CogAtlasID: https://www.cognitiveatlas.org/fillYourID
+  CogPOID: http://www.cogpo.org/fillYourID
+
+fieldmap:
+  IntendedFor: ''

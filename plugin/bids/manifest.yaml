@@ -1,0 +1,39 @@
+name: bids
+
+version: 0.0.1
+
+authors:
+- Sung-Ho Lee (shlee@unc.edu)
+
+license: MIT
+description: "BIDS plugin for tonifti app"
+documentation: "README.md"
+citation: CITATION.cff
+
+app:
+  target: tonifti
+  src: bids.py::Bids
+
+dependencies:
+- numpy>=1.18
+
+script:
+  name: bids
+  help: plugin function for converting file based on various BIDS specification
+  arguments:
+    - name: "--msme"
+      help: "Option for command line integration."
+      action: "store_true"
+      default: false
+    - name: "--dti"
+      help: "Option for DTI image"
+      action: "store_true"
+      default: false
+    - name: "--fieldmap"
+      help: "Option for FieldMap image"
+      action: "store_true"
+      default: false
+    - name: "--tripilot"
+      help: "Option for TriPilot image"
+      action: "store_true"
+      default: false

@@ -170,7 +170,7 @@ class Sordino(BasePlugin):
             if all(np.array(self.ext_factors) != 1):
                 if self.verbose:
                     ef = map('*'.join, list(zip(['x', 'y', 'z'], map(str, self.ext_factors))))
-                    print(f" + Extention factors: {', '.join(list(ef))}")
+                    print(f" + Extension factors: {', '.join(list(ef))}")
                 self._traj_apply_extension_factors()
 
     def _traj_apply_oversampling(self) -> None:

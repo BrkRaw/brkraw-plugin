@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from brkraw.app.tonifti import PvScan, PvReco, PvFiles
     
 
-class MyPlugIn(BasePlugin):
+class Bids(BasePlugin):
     """ Boilerplate code for a plugin for the nifti app in BrkRaw.
     
     The BasePlugin class extends the Scan class in brkraw.api.data. Refer to any compatible methods from
@@ -54,7 +54,8 @@ class MyPlugIn(BasePlugin):
     
     def __init__(self, pvobj: Union['PvScan', 'PvReco', 'PvFiles'],
                  # --- start of custom arguments ---
-                 option: Optional[bool],
+                 dti: Optional[bool],
+                 msme: Optional[bool],
                  # ---  end of custom arguments  ---
                  **kwargs
                  ) -> None:
@@ -66,7 +67,8 @@ class MyPlugIn(BasePlugin):
         """
         super().__init__(pvobj, **kwargs)
         # --- start of mapping custom argumentss ---
-        self.option = option
+        self.dti = dti
+        self.msme = msme
         # ---  end of mapping custom arguments  ---
         self._inspect()
         self._set_params()
