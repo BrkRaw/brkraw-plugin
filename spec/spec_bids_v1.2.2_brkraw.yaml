@@ -1,3 +1,6 @@
+name: bids_v1.2.2_brkraw
+type: bids-spec
+subtype: converter
 brkraw:
   path:
     type: string

@@ -1,7 +1,8 @@
 name: sordino
 type: plugin
-
+subtype: tonifti
 version: 24.4.27
+source: sordino.py::Sordino
 
 authors:
 - Sung-Ho Lee (shlee@unc.edu)
@@ -13,17 +14,12 @@ license: MIT
 description: "This plugin converts SORDINO-MRI (acquired in radial trajectory) to NIfTI format."
 documentation: "README.md"
 citation: CITATION.cff
-
-app:
-  target: tonifti
-  src: sordino.py::Sordino
-
 dependencies:
 - numpy>=1.18
 - scipy>=1.11.1
 - sigpy>=0.1.26
 
-script:
+argparser:
   name: sordino
   help: plugin function for SORDINO-MRI reconstruction
   arguments:

@@ -1,23 +1,20 @@
 name: bids
-
+type: plugin
+subtype: tonifti
 version: 0.0.1
+source: bids.py::Bids
 
 authors:
 - Sung-Ho Lee (shlee@unc.edu)
-
 license: MIT
 description: "BIDS plugin for tonifti app"
 documentation: "README.md"
 citation: CITATION.cff
 
-app:
-  target: tonifti
-  src: bids.py::Bids
-
 dependencies:
 - numpy>=1.18
 
-script:
+argparser:
   name: bids
   help: plugin function for converting file based on various BIDS specification
   arguments:
