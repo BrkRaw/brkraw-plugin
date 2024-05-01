@@ -1,28 +1,25 @@
 name: myplugin
-
+type: plugin
+subtype: tonifti
 version: 0.0.1
+source: myplugin.py::MyPlugIn
 
 authors:
-- Sung-Ho Lee (shlee@unc.edu)
-
-license: YourLicense
+- MyName (my@email.domain)
+license: MyLicense
 description: "My plugin."
 documentation: "README.md"
 citation: CITATION.cff
 
-app:
-  target: tonifti
-  src: myplugin.py::MyPlugIn
-
 dependencies:
 - numpy>=1.18
 
-script:
+argparser:
   name: myplugin
-  help: plugin function for SORDINO-MRI reconstruction
+  help: plugin function to multiply dataobj by 2
   arguments:
     - name: "--option"
-      help: "Option for command line integration."
+      help: "Option to activate multiplying dataobj by 2."
       action: "store_true"
       default: false
 

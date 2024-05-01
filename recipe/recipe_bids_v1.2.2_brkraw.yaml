@@ -1,3 +1,6 @@
+name: bids_v1.2.2_brkraw
+type: recipe
+subtype: bids-file_metadata
 startup:
   - 'import numpy as np'
 

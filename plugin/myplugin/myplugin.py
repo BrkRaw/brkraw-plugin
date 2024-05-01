@@ -108,9 +108,9 @@ class MyPlugIn(BasePlugin):
             dataobj *= 2
         return dataobj
     
-    def get_affine(self, reco_id:Optional[int]=None, 
-                   subj_type:Optional[str]=None, 
-                   subj_position:Optional[str]=None) -> NDArray:
+    def get_affine(self, reco_id: Optional[int] = None, 
+                   subj_type: Optional[str] = None, 
+                   subj_position: Optional[str] = None) -> NDArray:
         """Retrieve the affine transformation matrix.
 
         Args:
@@ -121,10 +121,10 @@ class MyPlugIn(BasePlugin):
         Returns:
             NDArray: Affine transformation matrix.
         """
-        return super().get_affine(scanobj=self, 
-                                  reco_id=reco_id, 
-                                  subj_type=subj_type, 
-                                  subj_position=subj_position)
+        return super().get_affine(scanobj = self, 
+                                  reco_id = reco_id, 
+                                  subj_type = subj_type, 
+                                  subj_position = subj_position)
     
     def get_nifti1header(self) -> Nifti1Header:
         """Retrieve the NIfTI header updated as necessary for this plugin.
