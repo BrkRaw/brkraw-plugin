@@ -2,7 +2,7 @@ name: sordino
 type: plugin
 subtype: tonifti
 version: 24.4.27
-source: sordino.py::Sordino
+source: sordino.py:Sordino
 
 authors:
 - Sung-Ho Lee (shlee@unc.edu)

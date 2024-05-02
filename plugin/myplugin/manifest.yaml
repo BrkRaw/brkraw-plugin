@@ -2,7 +2,7 @@ name: myplugin
 type: plugin
 subtype: tonifti
 version: 0.0.1
-source: myplugin.py::MyPlugIn
+source: myplugin.py:MyPlugIn
 
 authors:
 - MyName (my@email.domain)
