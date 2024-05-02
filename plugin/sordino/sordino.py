@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from typing import List, Union, Optional, Tuple, Literal
     from nibabel.nifti1 import Nifti1Header
     from brkraw.app.tonifti import PvScan, PvFiles
+    from numpy.typing import NDArray
     
 
 class Sordino(BasePlugin):
@@ -48,7 +49,7 @@ class Sordino(BasePlugin):
         self.scale_mode = scale_mode
         self.slope, self.inter = 1, 0
         
-    def get_dataobj(self) -> np.ndarray:
+    def get_dataobj(self) -> NDArray:
         self._set_trajectory()
         if self.spoketiming and self.num_frames > 1:
             bufferobj, buffer_size = self._fid_correct_spoketiming()
@@ -64,7 +65,7 @@ class Sordino(BasePlugin):
     
     def get_affine(self, reco_id:Optional[int]=None, 
                    subj_type:Optional[str]=None, 
-                   subj_position:Optional[str]=None) -> np.ndarray:
+                   subj_position:Optional[str]=None) -> NDArray:
         return super().get_affine(self, reco_id=reco_id, 
                                   subj_type=subj_type, 
                                   subj_position=subj_position)
@@ -82,7 +83,7 @@ class Sordino(BasePlugin):
         self.inter = np.min(dataobj)
         self.slope = (dmax - self.inter) / 2**16
         
-    def _dataobj_rescale_to_uint16(self, dataobj: np.ndarray) -> np.ndarray:
+    def _dataobj_rescale_to_uint16(self, dataobj: NDArray) -> NDArray:
         if self.verbose:
             print(f" + convert dtype to UINT16")
             print(f"   - Slope: {self.slope:.3f}")
@@ -195,7 +196,7 @@ class Sordino(BasePlugin):
                                      np.arange(1, self.fid_shape[2], 2)])
         self.traj = self.traj[:, :, proj_order]
 
-    def _traj_apply_extension_factors(self):
+    def _traj_apply_extension_factors(self) -> None:
         for i, ef in self.ext_factors:
             self.traj[i] *= ef
     
@@ -215,7 +216,7 @@ class Sordino(BasePlugin):
         return corrected_dataobj
             
     @staticmethod
-    def _rotate_dataobj(dataobj: np.ndarray, rotation_matrix) -> np.ndarray:
+    def _rotate_dataobj(dataobj: NDArray, rotation_matrix: NDArray) -> NDArray:
         axis_order = np.nonzero(rotation_matrix.T)[1].tolist()
         if len(dataobj.shape) > 3:
             axis_order += [3]
@@ -223,7 +224,7 @@ class Sordino(BasePlugin):
         x, y, z = rotation_matrix.sum(0)
         return corrected_dataobj[::x, ::y, ::z, ...]
     
-    def _recon_fid(self, filepath=None, buffer_size=None) -> np.ndarray:
+    def _recon_fid(self, filepath: Path = None, buffer_size: int = None) -> NDArray:
         buffer_size = buffer_size or self.buffer_size
         output_shape = np.round(self.mat_size * self.ext_factors, decimals=0).tolist()
         buffer_offset = 0 if filepath else self.offset * buffer_size
@@ -272,22 +273,22 @@ class Sordino(BasePlugin):
                 self._recon_dtype = volume.dtype
             recon_buffer.write(volume.T.flatten(order='C').tobytes())
     
-    def _apply_nufft(self, fid: np.ndarray, output_shape: list) -> np.ndarray:
+    def _apply_nufft(self, fid: NDArray, output_shape: list) -> NDArray:
         if self.nufft == 'sigpy':
             return self._sigpy_nufft(fid, output_shape)
         else:
             raise NotImplementedError
 
-    def _sigpy_nufft(self, fid: np.ndarray, output_shape: list) -> np.ndarray:
+    def _sigpy_nufft(self, fid: NDArray, output_shape: list) -> NDArray:
         dcf = np.square(self.traj).sum(0).T
         return sp.nufft_adjoint(fid.squeeze().T * dcf, self.traj.T, oshape=output_shape)
     
     def _fid_correct_spoketiming(self) -> Tuple[str, int]:
-        # parameters for spoke timing correction
+        # Parameters for spoke timing correction
         num_spokes = self.fid_shape[2]
         
         if self.verbose:
-            print("\n++ Running spoke timing correction")
+            print("\n++ Running Spoke Timing Correction")
         
         with tempfile.NamedTemporaryFile(mode='w+b', delete=False, dir=self.tmpdir) as stc_f:
             with self._get_fid() as fid_f:
@@ -335,10 +336,10 @@ class Sordino(BasePlugin):
         else:
             segrange = segs
         for seg_size in segrange:
-            # load data
+            # Load data
             spoke_buffer_size = int(self.buffer_size/num_spokes)
             spoke_offset = spoke_loc * spoke_buffer_size
-            # total buffer size for current segment
+            # Total buffer size for current segment
             seg_buffer_size = spoke_buffer_size * seg_size
             seg = []
             for t in range(self.num_frames):
@@ -364,11 +365,11 @@ class Sordino(BasePlugin):
         return stc_buffer_size
 
     def _fid_interpolate_segment(self, 
-                                 seg_data: np.ndarray, 
+                                 seg_data: NDArray, 
                                  seg_size: int, 
                                  num_echos: int, 
                                  num_spokes: int, 
-                                 spoke_loc: int) -> np.ndarray:
+                                 spoke_loc: int) -> NDArray:
         scan_time_per_vol = num_spokes * self.repetition_time
         target_timing = scan_time_per_vol / 2
         base_timestamps = np.arange(self.num_frames) * scan_time_per_vol
