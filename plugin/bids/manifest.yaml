@@ -2,7 +2,7 @@ name: bids
 type: plugin
 subtype: tonifti
 version: 0.0.1
-source: bids.py::Bids
+source: bids.py:Bids
 
 authors:
 - Sung-Ho Lee (shlee@unc.edu)

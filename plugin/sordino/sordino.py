@@ -45,7 +45,7 @@ class Sordino(BasePlugin):
         self.mem_limit: Optional[float] = mem_limit
         self.num_frames: Optional[int] = num_frames or self._num_frames
         self.nufft: str = nufft
-        self.scale_mode: scale_mode
+        self.scale_mode = scale_mode
         self.slope, self.inter = 1, 0
         
     def get_dataobj(self) -> np.ndarray:
