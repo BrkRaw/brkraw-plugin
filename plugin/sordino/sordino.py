@@ -75,7 +75,7 @@ class Sordino(BasePlugin):
             warnings.simplefilter("ignore")
             header = super().get_nifti1header(self)
             if self.scale_mode == 'header':
-                header.set_slope_inter(*self._calc_slope_inter())
+                header.set_slope_inter(slope=self.slope, inter=self.inter)
             return header
     
     def _calc_slope_inter(self, dataobj: np.ndarray) -> None:
