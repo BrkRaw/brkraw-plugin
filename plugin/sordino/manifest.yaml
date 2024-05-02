@@ -25,7 +25,7 @@ argparser:
   arguments:
     - name: "-e"
       long_name: "--extension"
-      help: "Extension factors for FOV regridding (LR AP SI)"
+      help: "Extension factors for FOV regridding"
       nargs: "3"
       type: float
       default: [1, 1, 1]
@@ -38,14 +38,14 @@ argparser:
       type: int
       default: null
     - name: "--tmpdir"
-      help: "Folder to store temporary file."
+      help: "Folder to store Temporary Caches during reconstruction."
       type: str
       default: null
     - name: "--spoketiming"
-      help: "Apply spoke timing correction."
+      help: "Apply Spoke Timing Correction."
       action: "store_true"
       default: false
     - name: "--mem-limit"
-      help: "Set limit of memory size when loading data (in GB)."
+      help: "Set limit of memory size for Spoke Timing Correction (in GB)."
       type: "float"
       default: 0.5
