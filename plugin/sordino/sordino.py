@@ -197,7 +197,7 @@ class Sordino(BasePlugin):
         self.traj = self.traj[:, :, proj_order]
 
     def _traj_apply_extension_factors(self) -> None:
-        for i, ef in self.ext_factors:
+        for i, ef in enumerate(self.ext_factors):
             self.traj[i] *= ef
     
     def _dataobj_correct_orientation(self, dataobj) -> None:
@@ -217,11 +217,12 @@ class Sordino(BasePlugin):
             
     @staticmethod
     def _rotate_dataobj(dataobj: NDArray, rotation_matrix: NDArray) -> NDArray:
-        axis_order = np.nonzero(rotation_matrix.T)[1].tolist()
+        rot_mat = np.round(rotation_matrix, decimals=0).astype(int)
+        axis_order = np.nonzero(rot_mat.T)[1].tolist()
         if len(dataobj.shape) > 3:
             axis_order += [3]
         corrected_dataobj = np.transpose(dataobj, axis_order)
-        x, y, z = rotation_matrix.sum(0)
+        x, y, z = rot_mat.sum(0)
         return corrected_dataobj[::x, ::y, ::z, ...]
     
     def _recon_fid(self, filepath: Path = None, buffer_size: int = None) -> NDArray:
