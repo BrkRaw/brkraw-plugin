@@ -5,49 +5,72 @@ import warnings
 import tempfile
 import numpy as np
 import sigpy as sp
+from nibabel.nifti1 import Nifti1Image
 from pathlib import Path
 from tqdm import tqdm
 from scipy.interpolate import interp1d
-from brkraw.app.tonifti import BasePlugin
-from typing import TYPE_CHECKING
+from brkraw.app.tonifti.plugin import ToNiftiPlugin
+from typing import TYPE_CHECKING, Type, Optional, Literal, List
 if TYPE_CHECKING:
+    from brkraw.app.tonifti.types import ScaleMode
+    from brkraw.api.pvobj.types import PvFileBuffer, PvObjType
     from io import BufferedReader, BufferedWriter
     from zipfile import ZipExtFile
-    from typing import List, Union, Optional, Tuple, Literal
-    from nibabel.nifti1 import Nifti1Header
-    from brkraw.app.tonifti import PvScan, PvFiles
+    from typing import Union, Tuple
     from numpy.typing import NDArray
     
 
-class Sordino(BasePlugin):
+ExtFactor = Type[Optional[List[float]]]
+
+NufftMode = Type[Optional[Literal['sigpy']]]
+
+
+class Sordino(ToNiftiPlugin):
     """ SORDINO: Plugin to Convert Bruker's SORDINO Images to NifTi File for ToNifti App in Brkraw
     ParaVision Compatability: > 360.x
     """
     _recon_dtype: Optional[np.dtype] = None
     
-    def __init__(self, pvobj: Union['PvScan', 'PvFiles'],
-                 ext_factors: List[float, float, float] = None, 
+    def __init__(self, pvobj: PvObjType,
+                 ext_factors: ExtFactor = None, 
                  offset: Optional[int] = None, 
                  num_frames: Optional[int] = None,
                  spoketiming: Optional[bool] = False,
                  mem_limit: Optional[float] = None,
                  tmpdir: Optional[Path] = None,
-                 nufft: Optional[Literal['sigpy']] = 'sigpy',
-                 scale_mode: Optional[Literal['header', 'apply']] = 'header',
+                 nufft: NufftMode = 'sigpy',
+                 scale_mode: ScaleMode = 'header',
                  **kwargs
                  ) -> None:
         super().__init__(pvobj, **kwargs)
         self._inspect()
         self._set_params()
         self._set_cache(tmpdir)
-        self.ext_factors: List[float, float, float] = ext_factors or [1,1,1]
+        self._set_ext_factor(ext_factors)
         self.offset: int = offset or 0
         self.spoketiming: bool = spoketiming
         self.mem_limit: Optional[float] = mem_limit
         self.num_frames: Optional[int] = num_frames or self._num_frames
-        self.nufft: str = nufft
-        self.scale_mode = scale_mode
-        self.slope, self.inter = 1, 0
+        self.nufft: NufftMode = nufft
+        self.scale_mode: ScaleMode = scale_mode
+        self.slope: float = 1
+        self.inter: float = 0
+        
+    def _set_ext_factor(self, ext_factors: ExtFactor):
+        if isinstance(ext_factors, list):
+            if len(ext_factors) != 3:
+                warnings.warn(f"The 'ext_factors' arguments expect three values; got {len(ext_factors)}. Argument ignored.")
+                ext_factors = [1,1,1]
+        self.ext_factors = ext_factors or [1,1,1]
+        
+    def get_nifti1image(self, 
+                        reco_id: Optional[int] = None,
+                        subj_type: Optional[str] = None,
+                        subj_position: Optional[str] = None) -> 'Nifti1Image':
+        dataobj = self.get_dataobj()
+        affine = self.get_affine(reco_id=reco_id, subj_type=subj_type, subj_position=subj_position)
+        nifti1image = Nifti1Image(dataobj=dataobj, affine=affine)
+        return self.update_nifti1header(nifti1image)
         
     def get_dataobj(self) -> NDArray:
         self._set_trajectory()
@@ -63,22 +86,24 @@ class Sordino(BasePlugin):
             dataobj = self._dataobj_rescale_to_uint16(dataobj)
         return dataobj
     
-    def get_affine(self, reco_id:Optional[int]=None, 
-                   subj_type:Optional[str]=None, 
-                   subj_position:Optional[str]=None) -> NDArray:
-        return super().get_affine(self, reco_id=reco_id, 
+    def get_affine(self, 
+                   reco_id: Optional[int] = None, 
+                   subj_type: Optional[str] = None, 
+                   subj_position: Optional[str] = None) -> NDArray:
+        return super().get_affine(self,
+                                  reco_id=reco_id, 
                                   subj_type=subj_type, 
                                   subj_position=subj_position)
     
-    def get_nifti1header(self) -> Nifti1Header:
+    def update_nifti1header(self, nifti1image: Nifti1Image) -> Nifti1Image:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            header = super().get_nifti1header(self)
+            nifti1image = super().update_nifti1header(self, nifti1image)
             if self.scale_mode == 'header':
-                header.set_slope_inter(slope=self.slope, inter=self.inter)
-            return header
+                nifti1image.header.set_slope_inter(slope=self.slope, inter=self.inter)
+            return nifti1image
     
-    def _calc_slope_inter(self, dataobj: np.ndarray) -> None:
+    def _calc_slope_inter(self, dataobj: NDArray) -> None:
         dmax = np.max(dataobj)
         self.inter = np.min(dataobj)
         self.slope = (dmax - self.inter) / 2**16
@@ -126,10 +151,10 @@ class Sordino(BasePlugin):
             warnings.warn("Input object is missing the 'orientation' attribute. \
                 This is not critical, but the orientation of the reconstructed image might be incorrect.", UserWarning)
 
-    def _get_fid(self) -> Union[BufferedReader, ZipExtFile]:
+    def _get_fid(self) -> PvFileBuffer:
         return self.pvobj.get_fid()
         
-    def _get_traj(self) -> Union[BufferedReader, ZipExtFile]:
+    def _get_traj(self) -> PvFileBuffer:
         return self.pvobj['traj']
     
     def _set_params(self) -> None:
@@ -216,7 +241,8 @@ class Sordino(BasePlugin):
         return corrected_dataobj
             
     @staticmethod
-    def _rotate_dataobj(dataobj: NDArray, rotation_matrix: NDArray) -> NDArray:
+    def _rotate_dataobj(dataobj: NDArray, 
+                        rotation_matrix: NDArray) -> NDArray:
         rot_mat = np.round(rotation_matrix, decimals=0).astype(int)
         axis_order = np.nonzero(rot_mat.T)[1].tolist()
         if len(dataobj.shape) > 3:
@@ -256,7 +282,7 @@ class Sordino(BasePlugin):
         return recon
     
     def _recon_process(self, 
-                       fid_buffer: Union['BufferedReader', 'ZipExtFile'], 
+                       fid_buffer: PvFileBuffer, 
                        recon_buffer: 'BufferedWriter', 
                        buffer_offset: int, 
                        output_shape: list) -> None:
@@ -299,7 +325,7 @@ class Sordino(BasePlugin):
         self._buffers.append(stc_f)
         return stc_f.name, stc_buffer_size
     
-    def _fid_get_filesize(self, fid_buffer: Union['BufferedReader', 'ZipExtFile']) -> float:
+    def _fid_get_filesize(self, fid_buffer: PvFileBuffer) -> float:
         if self.pvobj.is_compressed:
             fid_fname = os.path.basename(fid_buffer.name)
             fid_idx = [i for i, f in enumerate(self.pvobj._contents['files']) if fid_fname in f].pop()
