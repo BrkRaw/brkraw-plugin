@@ -1,7 +1,8 @@
+package: brkraw>=0.4.0
 name: sordino
 type: plugin
 subtype: tonifti
-version: 24.4.27
+version: 1.0.0
 source: sordino.py:Sordino
 
 authors:
