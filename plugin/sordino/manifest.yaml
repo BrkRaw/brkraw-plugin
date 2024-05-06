@@ -1,20 +1,27 @@
 package: brkraw>=0.4.0
-name: sordino
-type: plugin
-subtype: tonifti
-version: 1.0.0
-source: sordino.py:Sordino
+plugin:
+  name: sordino
+  version: 1.0.0
+  description: "This plugin converts SORDINO-MRI (acquired in radial trajectory) to NIfTI format."
 
-authors:
-- Sung-Ho Lee (shlee@unc.edu)
-- Martin J. MacKinnon (martin.mackinnon@nih.gov)
-- Wei-Tang Chang (weitang_chang@med.unc.edu)
-- Yen-Yu Ian Shih (shihy@neurology.unc.edu)
+meta:
+  authors:
+    - name: Sung-Ho Lee
+      email: shlee@unc.edu
+    - name: Martin J. MacKinnon
+      email: martin.mackinnon@nih.gov
+    - name: Wei-Tang Chang
+      email: weitang_chang@med.unc.edu
+    - name: Yen-Yu Ian Shih
+      email: shihy@neurology.unc.edu
+  license: MIT
+  documentation: "README.md"
+  citation: CITATION.cff
 
-license: MIT
-description: "This plugin converts SORDINO-MRI (acquired in radial trajectory) to NIfTI format."
-documentation: "README.md"
-citation: CITATION.cff
+source:
+  include:
+  entry_point: sordino.py:Sordino
+
 dependencies:
 - numpy>=1.18
 - scipy>=1.11.1
