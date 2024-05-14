@@ -19,7 +19,7 @@ meta:
   citation: CITATION.cff
 
 source:
-  include:
+  include: []
   entry_point: sordino.py:Sordino
 
 dependencies:
