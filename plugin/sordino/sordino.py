@@ -32,7 +32,7 @@ class Sordino(ToNiftiPlugin):
     _recon_dtype: Optional[np.dtype] = None
     
     def __init__(self, pvobj: PvObjType,
-                 ext_factors: ExtFactor = None, 
+                 ext_factors: Optional[ExtFactor] = None, 
                  offset: Optional[int] = None, 
                  num_frames: Optional[int] = None,
                  spoketiming: Optional[bool] = False,
