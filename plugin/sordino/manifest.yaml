@@ -1,9 +1,8 @@
 package: brkraw>=0.4.0
-app: tonifti
-plugin:
-  name: sordino
-  version: 1.0.0
-  description: "This plugin converts SORDINO-MRI (acquired in radial trajectory) to NIfTI format."
+type: tonifti
+name: sordino
+version: 1.0.0
+description: "This plugin converts SORDINO-MRI (acquired in radial trajectory) to NIfTI format."
 
 meta:
   authors:
